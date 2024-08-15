@@ -7,7 +7,6 @@ import pandas as pd
 
 pd.options.display.max_columns = None
 pd.options.display.max_rows = None
-pd.set_option('future.no_silent_downcasting', True)
 
 dotenv.load_dotenv()
 
@@ -20,22 +19,35 @@ OPENAI_API_KEY = os.getenv('OPEN_AI_API_KEY')
 GENAI_ID = os.getenv('GEN_ASSISTANT_ID')
 
 
-df = pd.read_csv('movies_metadata.csv')
+df = pd.read_csv('my_movies.csv')
 
-links_small = pd.read_csv('links_small.csv')
-df = df.drop([19730, 29503, 35587])
-df['id'] = df['id'].astype('int')
-links_small = links_small[links_small['tmdbId'].notnull()]['tmdbId'].astype('int')
+def eda():
+    sorted_df = df.sort_values('Abhi')
+    avg = sorted_df['Abhi'].mean()
+    least = sorted_df['Movies'].iloc[0]
+    greatest = sorted_df['Movies'].iloc[len(sorted_df) - 1]
 
-small_df = df[df['id'].isin(links_small)].dropna(axis=0, how='all')
+    return avg, least, greatest
 
-small_df['overview'].fillna('')
-small_df['tagline'].fillna('')
-small_df['description'] = small_df['overview'].fillna('') + small_df['tagline'].fillna('')
+@client.event
+async def on_ready():
+    print(f"{client.user} is ready")
 
-small_df.fillna(0)
+@client.event
+async def on_message(message):
+    cont = message.content.split()
+    msg = ' '.join(cont[1:]).lower()
+    output_message = ''
+    if message.author.bot:
+        return
+    await message.channel.send('hi')
+    if cont[0] == '||':
+        await message.channel.send('hello')
+        if msg == 'eda':
+            avg, least, greatest = eda()
+            output_message = f"your average is {avg}, your least rated movie is {least} and your highest rated movie is {greatest}"
+        await message.channel.send(output_message)
 
-print(small_df.shape)
 
 def main():
     client.run(TOKEN)
