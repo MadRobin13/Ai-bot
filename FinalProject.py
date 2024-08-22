@@ -4,6 +4,7 @@ import dotenv
 import os
 import sklearn
 import pandas as pd
+import asyncio
 
 pd.options.display.max_columns = None
 pd.options.display.max_rows = None
@@ -32,19 +33,18 @@ def eda():
 
     return avg, least, greatest
 
-def recommend(channel):
+async def syn():
     filter_condition = df['Abhi'] > df['Abhi'].quantile(0.7)
     filtered_df = df[filter_condition]
-    # return filtered_df
 
-    messages = []
+    messageList = []
     message = {
         'role' : 'user',
-        'content' : 'create a a movie synopsis based on these movies I like'
+        'content' : 'create a a movie synopsis based on these movies I like: ' + str(filtered_df)
     }
 
     thread = ai.beta.threads.create(
-        messages=messages
+        messages=messageList
     )
 
     ai.beta.threads.runs.create(
@@ -53,6 +53,15 @@ def recommend(channel):
         max_completion_tokens=300,
         thread_id=thread.id
     )
+
+    for i in range(30):
+        messages = await ai.beta.threads.messages.list(thread_id=thread.id)
+        print(messages.data[0].content[0].text.value)
+        if len(messages.data) > 1 and len(messages.data[0].content) > 0:
+            return messages.data[0].content[0].text.value
+        await asyncio.sleep(1)
+
+
 
     response = "can't do much right now"
     return response
@@ -77,8 +86,8 @@ async def on_message(message):
             avg, least, greatest = eda()
             output_message = f"your average rating is {avg}, your least rated movie is {least}, and your highest rated movie is {greatest}"
             await message.channel.send(output_message)
-        if msg == 'recommend':
-            await message.channel.send(str(recommend(message.channel)))
+        if msg == 'syn':
+            await message.channel.send(str(await syn()))
 
 
 def main():
