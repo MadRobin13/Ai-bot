@@ -25,3 +25,4 @@
  - It then sends the message!
 
 ## License:
+The [License](LICENSE) is a BSD 3-Clause "New" or "Revised" License.
