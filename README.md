@@ -1,4 +1,4 @@
-# Movie Recommendation AI Bot
+# Movie Synopsis Generating AI Bot
 
 ## What it does:
 - Returns your average movie score along with your highest and lowest rated movies when you type "_|| eda_"
