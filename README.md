@@ -1,5 +1,7 @@
 # Movie Synopsis Generating AI Bot
 
+<img width="500" alt="image" src="https://github.com/user-attachments/assets/e9f145b2-7a79-468d-a9ce-a98b3d173384">
+
 ## What it does:
 - Returns your average movie score along with your highest and lowest rated movies when you type "_|| eda_"
 - Returns a Made up movie synopsis based on your highest rated movies when you type "_|| syn_"
